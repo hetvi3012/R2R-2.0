@@ -1,16 +1,15 @@
 // src/server.js
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors'); // Import CORS
 const r2rRoutes = require('./routes/r2r');
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
+app.use(cors()); // Use CORS
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/right_to_recall', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect('mongodb://localhost:27017/right_to_recall');
 
 app.use('/api/r2r', r2rRoutes);
 

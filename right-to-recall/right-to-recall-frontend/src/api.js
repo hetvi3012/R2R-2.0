@@ -26,3 +26,31 @@ export const submitVote = async (vote) => {
     console.error('Error submitting vote:', error);
   }
 };
+
+export const fetchStatesAndConstituencies = async () => {
+  try {
+    const response = await fetch(`${API_URL}/states-constituencies`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching states and constituencies:', error);
+  }
+};
+
+export const fetchStates = async () => {
+  try {
+    const response = await fetch(`${API_URL}/states`);
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching states:', error);
+  }
+};
+
+export const fetchConstituenciesByState = async (state) => {
+  try {
+    const response = await fetch(`${API_URL}/constituencies/${state}`);
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching constituencies:', error);
+  }
+};

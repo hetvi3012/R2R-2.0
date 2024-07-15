@@ -1,14 +1,33 @@
 // src/pages/Home.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchStates, fetchConstituenciesByState } from '../api';
 
 const Home = () => {
-  const [state, setState] = useState('');
-  const [constituency, setConstituency] = useState('');
+  const [states, setStates] = useState([]);
+  const [constituencies, setConstituencies] = useState([]);
+  const [selectedState, setSelectedState] = useState('');
+  const [selectedConstituency, setSelectedConstituency] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const getStates = async () => {
+      const statesData = await fetchStates();
+      setStates(statesData);
+    };
+
+    getStates();
+  }, []);
+
+  const handleStateChange = async (e) => {
+    const state = e.target.value;
+    setSelectedState(state);
+    const constituenciesData = await fetchConstituenciesByState(state);
+    setConstituencies(constituenciesData);
+  };
+
   const handleNext = () => {
-    navigate('/leader-selection', { state, constituency });
+    navigate('/leader-selection', { state: selectedState, constituency: selectedConstituency });
   };
 
   return (
@@ -16,28 +35,29 @@ const Home = () => {
       <h1 className="text-4xl mb-6">Select Your State and Constituency</h1>
       <select
         className="mb-4 p-2 border border-gray-300 rounded"
-        value={state}
-        onChange={(e) => setState(e.target.value)}
+        value={selectedState}
+        onChange={handleStateChange}
       >
         <option value="">Select State</option>
-        <option value="State1">State1</option>
-        <option value="State2">State2</option>
-        {/* Add more states */}
+        {states.map((state) => (
+          <option key={state._id} value={state.name}>{state.name}</option>
+        ))}
       </select>
       <select
         className="mb-4 p-2 border border-gray-300 rounded"
-        value={constituency}
-        onChange={(e) => setConstituency(e.target.value)}
+        value={selectedConstituency}
+        onChange={(e) => setSelectedConstituency(e.target.value)}
+        disabled={!selectedState}
       >
         <option value="">Select Constituency</option>
-        <option value="Constituency1">Constituency1</option>
-        <option value="Constituency2">Constituency2</option>
-        {/* Add more constituencies */}
+        {constituencies.map((constituency) => (
+          <option key={constituency._id} value={constituency.name}>{constituency.name}</option>
+        ))}
       </select>
       <button
         className="bg-blue-500 text-white p-2 rounded"
         onClick={handleNext}
-        disabled={!state || !constituency}
+        disabled={!selectedState || !selectedConstituency}
       >
         Next
       </button>
